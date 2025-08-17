@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Voice Chat</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h2>🌍 Voice Chat</h2>
+  <p>Введите комнату (например, Russia или Uzbekistan):</p>
+  <input id="roomInput" placeholder="room name">
+  <button onclick="joinRoom()">Join</button>
+
+  <div id="status"></div>
+  <ul id="users"></ul>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
