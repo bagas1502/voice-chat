@@ -2,25 +2,26 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Family Voice Chat</title>
+  <title>Voice Chat</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h2>🎙 Family Voice Chat</h2>
-  <div id="auth">
-    <input id="nameInput" placeholder="Введите ваше имя">
-    <button onclick="saveName()">Сохранить</button>
+  <h2>👨‍👩‍👧‍👦 Семейная комната</h2>
+
+  <div id="loginDiv">
+    <label>Введите ваше имя:</label>
+    <input id="username" placeholder="Ваше имя">
+    <button id="joinBtn">Войти в чат</button>
   </div>
 
-  <div id="chatUI" style="display:none;">
-    <p id="welcome"></p>
-    <input id="roomInput" placeholder="Введите название комнаты" value="family">
-    <button onclick="joinRoom()">🔊 Войти</button>
-    <button onclick="leaveRoom()">🚪 Выйти</button>
-    <p id="status">⏳ Ожидание...</p>
+  <div id="chatDiv" style="display:none;">
+    <button id="leaveBtn">Выйти</button>
+    <div id="status"></div>
+    <h3>Сейчас в чате:</h3>
+    <ul id="users"></ul>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
-  <script src="https://unpkg.com/simple-peer@9.11.1/simplepeer.min.js"></script>
-  <script src="script.js"></script>
+  <script src="client.js"></script>
 </body>
 </html>

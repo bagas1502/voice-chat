@@ -1,17 +1,43 @@
 const socket = io();
 let peers = {};
 let localStream;
-const roomName = "family-room"; // фиксированная комната
+let username = "";
 
-async function joinRoom() {
-  document.getElementById("status").innerText = "🔊 Подключаем микрофон...";
+const loginDiv = document.getElementById("loginDiv");
+const chatDiv = document.getElementById("chatDiv");
+const joinBtn = document.getElementById("joinBtn");
+const leaveBtn = document.getElementById("leaveBtn");
+const statusDiv = document.getElementById("status");
+const usersList = document.getElementById("users");
+
+joinBtn.onclick = async () => {
+  username = document.getElementById("username").value || "Гость";
+  localStorage.setItem("username", username);
+
+  loginDiv.style.display = "none";
+  chatDiv.style.display = "block";
+
+  statusDiv.innerText = "🔊 Подключаем микрофон...";
   localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-  socket.emit("join-room", roomName);
-  document.getElementById("status").innerText = "✅ Вы подключены";
-}
+  socket.emit("join-room", username);
+  statusDiv.innerText = `✅ Вы в комнате как ${username}`;
+};
 
-socket.on("user-joined", async (userId) => {
+leaveBtn.onclick = () => {
+  location.reload(); // простое решение выхода
+};
+
+socket.on("user-list", (list) => {
+  usersList.innerHTML = "";
+  list.forEach(user => {
+    const li = document.createElement("li");
+    li.innerText = user;
+    usersList.appendChild(li);
+  });
+});
+
+socket.on("user-joined", (userId) => {
   const peer = createPeer(userId, true);
   peers[userId] = peer;
 });
@@ -32,6 +58,7 @@ socket.on("user-left", (userId) => {
   }
 });
 
+// WebRTC через simple-peer
 function createPeer(userId, initiator) {
   const peer = new SimplePeer({
     initiator,
@@ -52,3 +79,9 @@ function createPeer(userId, initiator) {
 
   return peer;
 }
+
+// Автоматическое заполнение имени из localStorage
+window.onload = () => {
+  const savedName = localStorage.getItem("username");
+  if (savedName) document.getElementById("username").value = savedName;
+};
