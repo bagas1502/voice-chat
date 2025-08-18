@@ -1,79 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Voice Chat</title>
+  <title>Семейная аудиокомната</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h2>🔥 Voice Chat Room</h2>
-
-  <div>
-    <label>Введите имя: </label>
-    <input id="username" placeholder="Ваше имя">
-    <button id="joinBtn">Join Chat</button>
-  </div>
-
-  <h3>👥 Сейчас в чате:</h3>
-  <ul id="users"></ul>
+  <h1>🎧 Семейная комната</h1>
+  <p id="status">Ожидание подключения...</p>
+  <button onclick="joinRoom()">Войти</button>
 
   <script src="/socket.io/socket.io.js"></script>
-  <script>
-    const socket = io();
-    let peers = {};
-    let localStream;
-
-    document.getElementById("joinBtn").onclick = async () => {
-      const name = document.getElementById("username").value || "Гость";
-      socket.emit("join", name);
-
-      localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    };
-
-    // список пользователей
-    socket.on("user-list", (list) => {
-      const ul = document.getElementById("users");
-      ul.innerHTML = "";
-      list.forEach(user => {
-        const li = document.createElement("li");
-        li.innerText = user;
-        ul.appendChild(li);
-      });
-    });
-
-    // сигналинг для WebRTC
-    socket.on("signal", async (data) => {
-      if (!peers[data.sender]) {
-        const peer = new RTCPeerConnection();
-        peers[data.sender] = peer;
-
-        localStream.getTracks().forEach(track => peer.addTrack(track, localStream));
-
-        peer.ontrack = (event) => {
-          const audio = document.createElement("audio");
-          audio.srcObject = event.streams[0];
-          audio.autoplay = true;
-          document.body.appendChild(audio);
-        };
-
-        peer.onicecandidate = (event) => {
-          if (event.candidate) {
-            socket.emit("signal", { target: data.sender, signal: event.candidate });
-          }
-        };
-      }
-
-      const peer = peers[data.sender];
-      if (data.signal.type === "offer") {
-        await peer.setRemoteDescription(new RTCSessionDescription(data.signal));
-        const answer = await peer.createAnswer();
-        await peer.setLocalDescription(answer);
-        socket.emit("signal", { target: data.sender, signal: peer.localDescription });
-      } else if (data.signal.type === "answer") {
-        await peer.setRemoteDescription(new RTCSessionDescription(data.signal));
-      } else if (data.signal.candidate) {
-        await peer.addIceCandidate(new RTCIceCandidate(data.signal));
-      }
-    });
-  </script>
+  <script src="https://unpkg.com/simple-peer@9.11.1/simplepeer.min.js"></script>
+  <script src="client.js"></script>
 </body>
 </html>

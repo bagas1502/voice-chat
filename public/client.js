@@ -1,17 +1,14 @@
 const socket = io();
 let peers = {};
 let localStream;
-let roomName = "";
+const roomName = "family-room"; // фиксированная комната
 
 async function joinRoom() {
-  roomName = document.getElementById("roomInput").value;
-  if (!roomName) return alert("Введите имя комнаты");
-
   document.getElementById("status").innerText = "🔊 Подключаем микрофон...";
   localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
   socket.emit("join-room", roomName);
-  document.getElementById("status").innerText = "✅ Вы в комнате: " + roomName;
+  document.getElementById("status").innerText = "✅ Вы подключены";
 }
 
 socket.on("user-joined", async (userId) => {
@@ -35,7 +32,6 @@ socket.on("user-left", (userId) => {
   }
 });
 
-// WebRTC через simple-peer
 function createPeer(userId, initiator) {
   const peer = new SimplePeer({
     initiator,

@@ -1,13 +1,25 @@
 {
   "name": "voice-chat",
   "version": "1.0.0",
-  "description": "Simple WebRTC voice chat",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "socket.io": "^4.7.2"
-  }
+    "express": "^4.21.2",
+    "simple-peer": "^9.11.1",
+    "socket.io": "^4.8.1"
+  },
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bagas1502/voice-chat.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bagas1502/voice-chat/issues"
+  },
+  "homepage": "https://github.com/bagas1502/voice-chat#readme"
 }
