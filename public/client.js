@@ -2,13 +2,16 @@ const socket = io();
 let peers = {};
 let localStream;
 let username = "";
+let muted = false;
 
 const loginDiv = document.getElementById("loginDiv");
 const chatDiv = document.getElementById("chatDiv");
 const joinBtn = document.getElementById("joinBtn");
 const leaveBtn = document.getElementById("leaveBtn");
-const statusDiv = document.getElementById("status");
 const usersList = document.getElementById("users");
+const statusDiv = document.getElementById("status");
+const volumeSlider = document.getElementById("volume");
+const muteBtn = document.getElementById("muteBtn");
 
 joinBtn.onclick = async () => {
   username = document.getElementById("username").value || "Гость";
@@ -25,7 +28,10 @@ joinBtn.onclick = async () => {
 };
 
 leaveBtn.onclick = () => {
-  location.reload(); // простое решение выхода
+  Object.values(peers).forEach(p => p.destroy());
+  peers = {};
+  chatDiv.style.display = "none";
+  loginDiv.style.display = "block";
 };
 
 socket.on("user-list", (list) => {
@@ -58,7 +64,6 @@ socket.on("user-left", (userId) => {
   }
 });
 
-// WebRTC через simple-peer
 function createPeer(userId, initiator) {
   const peer = new SimplePeer({
     initiator,
@@ -74,13 +79,25 @@ function createPeer(userId, initiator) {
     const audio = document.createElement("audio");
     audio.srcObject = stream;
     audio.autoplay = true;
+    audio.volume = volumeSlider.value;
     document.body.appendChild(audio);
   });
 
   return peer;
 }
 
-// Автоматическое заполнение имени из localStorage
+// Управление звуком
+volumeSlider.oninput = () => {
+  document.querySelectorAll("audio").forEach(a => a.volume = volumeSlider.value);
+};
+
+muteBtn.onclick = () => {
+  muted = !muted;
+  localStream.getAudioTracks().forEach(track => track.enabled = !muted);
+  muteBtn.innerText = muted ? "Включить звук" : "Выключить звук";
+};
+
+// Автозаполнение имени
 window.onload = () => {
   const savedName = localStorage.getItem("username");
   if (savedName) document.getElementById("username").value = savedName;
